@@ -29,7 +29,7 @@ Também exporta os tipos utilizados na API através do `MtrWSType`:
 
 - Estruturação utilizando [LogTape](https://logtape.org/manual/start)
 - Tag principal: `mtr-ws-wrapper-ts`
-      <details><summary>Configuração sugerida</summary>
+  <details><summary>Configuração sugerida</summary>
 
 ```ts
 import { configure, getConsoleSink } from "@logtape/logtape";

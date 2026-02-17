@@ -24,5 +24,4 @@ const DownloadMtrResponseSchema = z.instanceof(ArrayBuffer, {
 
 const DownloadMtrRequestSchema = z.object({
     mtrId: z.string().min(5),
-    destinationFolder: z.string().min(1).nonempty().optional(),
 });

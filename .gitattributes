@@ -1,0 +1,23 @@
+*               text=auto eol=lf
+
+*.ts            text diff=typescript
+*.md            text diff=markdown
+*.json          text
+*.yaml          text
+*.yml           text
+.editorconfig   text
+.gitignore      text
+.gitattributes  text
+
+deno.lock       binary merge=binary
+
+*.pdf           binary
+*.png           binary
+*.jpg           binary
+*.jpeg          binary
+*.ico           binary
+*.sh            text eol=lf
+
+coverage/*      linguist-generated
+dist/*          linguist-generated
+docs/*          linguist-documentation

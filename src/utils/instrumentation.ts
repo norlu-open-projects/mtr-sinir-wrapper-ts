@@ -7,7 +7,6 @@
 
 import { tracer } from "~telemetry";
 import { logger } from "~logger";
-import { ulid } from "@ulid";
 import type { WsUserRole } from "~type/ws_config.type.ts";
 
 export { FnWithInstrumentation, type MetadataForInstrumentation };
@@ -36,7 +35,7 @@ async function FnWithInstrumentation<T>(
     childLoggerTag: string,
     debugInputContext?: unknown,
 ): Promise<T> {
-    const requestId = ulid();
+    const requestId = "";
     const startTime = Date.now();
     const span = tracer.startSpan(id.spanName);
     span.setAttribute("session.id", id.sessionId);

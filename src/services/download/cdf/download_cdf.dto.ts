@@ -24,5 +24,4 @@ const DownloadCdfResponseSchema = z.instanceof(ArrayBuffer, {
 
 const DownloadCdfRequestSchema = z.object({
     cdfId: z.string().min(5),
-    destinationFolder: z.string().min(1).nonempty().optional(),
 });

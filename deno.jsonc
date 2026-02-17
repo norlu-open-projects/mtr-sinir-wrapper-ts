@@ -8,18 +8,17 @@
         // Coverage report configs, NEEDS lcov package on system
         "coverage:report": "deno task coverage ; deno coverage ./tests/coverage-log --lcov > ./tests/coverage-log/coverage.lcov ; genhtml -o ./tests/coverage-log ./tests/coverage-log/coverage.lcov",
         "coverage:dev": "deno task coverage ; deno coverage ./tests/coverage-log",
-        "coverage": "deno task test --reporter=dot --coverage=./coverage-log"
+        "coverage": "deno task test --reporter=dot --coverage=./coverage-log",
     },
 
     // ======= Dependency area =======
     "imports": {
         // Relative local imports
-        "~logger": "./src/configs/logger.ts",
-        "~telemetry": "./src/configs/telemetry.ts",
-        "~service/": "./src/services/",
-        "~type/": "./src/internal_types/",
-        "~class/": "./src/classes/",
-        "~util/": "./src/utils/",
+        "~config/": "./configs/",
+        "~service/": "./services/",
+        "~type/": "./types/",
+        "~util/": "./utils/",
+        "~core/": "./core/",
 
         // Testing packages
         // For more details see: https://docs.deno.com/runtime/fundamentals/testing/#writing-tests
@@ -27,28 +26,33 @@
         "@testing": "jsr:@std/testing",
 
         // Dependencies
-        "@zod": "npm:zod@^3.24.2",
-        "@logtape": "jsr:@logtape/logtape@^0.12.0",
+        "@logtape": "jsr:@logtape/logtape@^2.0.2",
         "@opentelemetry": "npm:@opentelemetry/api@^1.9.0",
-        "@ulid": "jsr:@std/ulid@^1.0.0",
-        "@path": "jsr:@std/path@^1.0.9"
+        "@zod": "jsr:@zod/zod@^4.3.6",
+        "@uuid": "jsr:@std/uuid@^1.1.0",
     },
 
-    // Unstable features from DenoJS
+    // Engine configs
     "unstable": ["otel"],
+    "lock": { "frozen": true },
     "nodeModulesDir": "auto",
-    // "compilerOptions": {
-    //     "lib": ["dom", "esnext"]
-    // },
+    "compilerOptions": {
+        "strict": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "exactOptionalPropertyTypes": true,
+    },
 
     // ======= JSR publish area =======
-    "name": "@mtr-ws/mtr-ws-wrapper-ts",
-    "version": "0.1.0",
+    "name": "@norlu/mtr-sinir-wrapper-ts",
+    "version": "0.2.0",
     "exports": "./mod.ts",
     "license": "MPL-2.0",
 
     "publish": {
-        "exclude": ["./tests", ".editorconfig", ".vscode", ".github", ".zed", ".env*"]
+        "exclude": ["./tests", ".editorconfig", ".vscode", ".github", ".zed", ".env*", ".gitignore", ".gitattributes"],
     },
 
     // ======= Source code standardization area =======
@@ -62,7 +66,10 @@
         "semiColons": true,
         "singleQuote": false,
         "proseWrap": "preserve",
-        "newLineKind": "lf"
+        "nextControlFlowPosition": "nextLine",
+        "operatorPosition": "nextLine",
+        "quoteProps": "preserve",
+        "newLineKind": "lf",
     },
 
     // Linter for
@@ -94,8 +101,8 @@
                 "no-useless-rename",
                 "single-var-declarator",
                 "triple-slash-reference",
-                "verbatim-module-syntax"
-            ]
-        }
-    }
+                "verbatim-module-syntax",
+            ],
+        },
+    },
 }

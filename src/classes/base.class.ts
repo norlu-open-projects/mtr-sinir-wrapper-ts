@@ -5,7 +5,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import { ulid } from "@ulid";
 import { WsAuth } from "~service/main.service.ts";
 import type { MetadataForInstrumentation } from "~util/instrumentation.ts";
 import { WsBaseToBaseURL } from "~util/translate_base_to_url.ts";
@@ -33,7 +32,7 @@ abstract class BaseMtrWsClient {
         this.token = token;
         this.baseUrl = WsBaseToBaseURL(config.baseWebServer);
         this.role = config.role;
-        this.sessionId = ulid();
+        this.sessionId = "";
         this.userPersistentId = config.persistentId ?? "";
         this._ctx = { baseUrl: this.baseUrl, token };
         this._metaData = {
