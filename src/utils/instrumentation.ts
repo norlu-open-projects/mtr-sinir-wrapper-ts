@@ -96,17 +96,21 @@ async function FnWithInstrumentation<T>(
         const errorTime = new Date();
         const duration = Date.now() - startTime;
 
-        childLogger.error(`[${id.spanName}] > Error - {userRole} - {userPersistentId} - {durationMs} - {error}`, {
-            event: id.spanName,
-            phase: "error",
-            userPersistentId: id.userPersistentId,
-            userRole: id.userRole,
-            sessionId: id.sessionId,
-            requestId,
-            timestamp: errorTime.toISOString(),
-            durationMs: duration,
-            error: error instanceof Error ? error.message : String(error),
-        });
+        childLogger.error(
+            `[${id.spanName}] > Error - {userRole} - {userPersistentId} - {durationMs} - {error} - {data}`,
+            {
+                event: id.spanName,
+                phase: "error",
+                userPersistentId: id.userPersistentId,
+                userRole: id.userRole,
+                sessionId: id.sessionId,
+                requestId,
+                timestamp: errorTime.toISOString(),
+                durationMs: duration,
+                data: debugInputContext,
+                error: error instanceof Error ? error.message : String(error),
+            },
+        );
 
         span.setAttribute("status", "error");
         span.setAttribute("duration.ms", duration);

@@ -27,45 +27,56 @@ async function downloadMTRMethod(
 
     parseApiInput(DownloadMtrRequestSchema, params);
 
-    const endpoint = `${ctx.baseUrl}/downloadManifesto/${params.mtrId}`;
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-            "Authorization": ctx.token,
-            "Accept": "application/pdf",
-            "Content-Type": "application/json",
-        },
+    const mtrIds = Array.isArray(params.mtrId) ? params.mtrId : [params.mtrId];
+
+    const results: ArrayBuffer[] = [];
+
+    const downloadPromises = mtrIds.map(async (mtrId) => {
+        const endpoint = `${ctx.baseUrl}/downloadManifesto/${mtrId}`;
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Authorization": ctx.token,
+                "Accept": "application/pdf",
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            const _ = await response.text();
+            throw new Error(
+                `HTTP ${response.status} @ ${endpoint}: ${response.statusText}`,
+            );
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        if (params.destinationFolder) {
+            await Deno.writeFile(
+                join(
+                    params.destinationFolder,
+                    createMTRFileName(mtrId),
+                ),
+                new Uint8Array(buffer),
+            );
+        }
+        return buffer;
     });
 
-    if (!response.ok) {
-        const _ = await response.text();
-        throw new Error(
-            `HTTP ${response.status} @ ${endpoint}: ${response.statusText}`,
-        );
-    }
+    results.push(...await Promise.all(downloadPromises));
 
     const response_parsed: WsResponseModel<DownloadMtrResponse> = {
         erro: false,
         mensagem: "",
-        totalRecords: 1,
-        objetoResposta: await response.arrayBuffer(),
+        totalRecords: results.length,
+        objetoResposta: Array.isArray(params.mtrId) ? results : results[0],
     };
 
     const result = parseApiResponse(
         DownloadMtrResponseSchema,
         response_parsed,
-        endpoint,
+        "",
     );
-
-    if (params.destinationFolder) {
-        await Deno.writeFile(
-            join(
-                params.destinationFolder,
-                createMTRFileName(params.mtrId),
-            ),
-            new Uint8Array(result),
-        );
-    }
 
     return result;
 }

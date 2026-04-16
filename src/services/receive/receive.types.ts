@@ -5,6 +5,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/.
  */
 
-import type { ReceberLoteMtrRequest, ReceberLoteMtrResponse } from "./receber_mtr/receber_mtr.dto.ts";
+import type { ReceberLoteMtrRequest, ReceberLoteMtrResponse, SimpleReceiveInput } from "./receber_mtr/receber_mtr.dto.ts";
 
-export type { ReceberLoteMtrRequest, ReceberLoteMtrResponse };
+export type { ReceberLoteMtrRequest, ReceberLoteMtrResponse, SimpleReceiveInput };

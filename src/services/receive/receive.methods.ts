@@ -7,7 +7,7 @@
 
 import type { WsMethodContext } from "~type/ws_config.type.ts";
 import { FnWithInstrumentation, type MetadataForInstrumentation } from "~util/instrumentation.ts";
-import { receberLoteMTRMethod } from "./receber_mtr/receber_mtr.service.ts";
+import { mapConsultToReceive, receberLoteMTRMethod } from "./receber_mtr/receber_mtr.service.ts";
 
 export { createReceiveMethods };
 
@@ -41,5 +41,6 @@ function createReceiveMethods(
 
     return {
         receberLoteMtrs: wrap(receberLoteMTRMethod, `${metaData.userRole}.receberLoteMtrs`),
+        mapConsultToReceive: mapConsultToReceive,
     };
 }

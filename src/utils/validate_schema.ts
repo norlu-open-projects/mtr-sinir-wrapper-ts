@@ -18,7 +18,7 @@ function parseApiResponse<_>(
     if (data.erro) {
         const mensagem = JSON.stringify({ mensagem: data.mensagem });
         throw new Error(
-            `Request recusada pela API: [${endpoint}]: \n${mensagem}`,
+            `Request recusada pela API: [${endpoint}]: \n${mensagem}]`,
         );
     }
 

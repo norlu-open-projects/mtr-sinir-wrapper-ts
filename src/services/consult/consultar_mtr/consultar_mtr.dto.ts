@@ -19,7 +19,7 @@ const ConsultarMtrResponseSchema = z.object({
     manDataExpedicao: z.number().or(z.null()),
     manNomeMotorista: z.string(),
     manPlacaVeiculo: z.string(),
-    manObservacao: z.string(),
+    manObservacao: z.string().or(z.null()),
     manJustificativaCancelamento: z.string(),
     estado: z.object({
         estCodigo: z.number(),

@@ -12,10 +12,29 @@ export {
     ReceberLoteMtrRequestSchema,
     type ReceberLoteMtrResponse,
     ReceberLoteMtrResponseSchema,
+    type SimpleReceiveInput,
+    SimpleReceiveInputSchema,
 };
 
 type ReceberLoteMtrRequest = z.infer<typeof ReceberLoteMtrRequestSchema>;
 type ReceberLoteMtrResponse = z.infer<typeof ReceberLoteMtrResponseSchema>;
+type SimpleReceiveInput = z.infer<typeof SimpleReceiveInputSchema>;
+
+const SimpleReceiveInputSchema = z.object({
+    motorista: z.string().min(1),
+    placa: z.string().min(1),
+    quantidade: z.number().min(0),
+    responsavel: z.string().optional(),
+    observacoes: z.string().optional(),
+    dataRecebimento: z.number().optional(),
+    justificativa: z.string().optional(),
+    resCodigoIbamaNovo: z.string().optional(),
+    traCodigoNovo: z.number().optional(),
+    uniCodigo: z.number().optional(),
+    tieCodigo: z.number().optional(),
+    tiaCodigo: z.number().optional(),
+    claCodigo: z.number().optional(),
+});
 
 const ReceberLoteMtrResponseSchema = z.array(
     z.object({
@@ -36,7 +55,7 @@ const ReceberLoteMtrResponseSchema = z.array(
                 restResponseValido: z.boolean(),
                 restResponseMensagem: z.string(),
                 codigoGerado: z.string().or(z.null()),
-                manCodigo: z.string().or(z.null()),
+                manCodigo: z.number().or(z.null()),
                 resCodigo: z.string().or(z.null()),
                 resCodigoIbama: z.string(),
                 resCodigoIbamaNovo: z.string().or(z.null()),

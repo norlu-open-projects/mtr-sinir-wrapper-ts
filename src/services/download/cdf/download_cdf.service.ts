@@ -27,45 +27,56 @@ async function downloadCDFMethod(
 
     parseApiInput(DownloadCdfRequestSchema, params);
 
-    const endpoint = `${ctx.baseUrl}/downloadCertificado/${params.cdfId}`;
-    const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-            "Authorization": ctx.token,
-            "Accept": "application/pdf",
-            "Content-Type": "application/json",
-        },
+    const cdfIds = Array.isArray(params.cdfId) ? params.cdfId : [params.cdfId];
+
+    const results: ArrayBuffer[] = [];
+
+    const downloadPromises = cdfIds.map(async (cdfId) => {
+        const endpoint = `${ctx.baseUrl}/downloadCertificado/${cdfId}`;
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Authorization": ctx.token,
+                "Accept": "application/pdf",
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            const _ = await response.text();
+            throw new Error(
+                `HTTP ${response.status} @ ${endpoint}: ${response.statusText}`,
+            );
+        }
+
+        const buffer = await response.arrayBuffer();
+
+        if (params.destinationFolder) {
+            await Deno.writeFile(
+                join(
+                    params.destinationFolder,
+                    createCDFFileName(cdfId),
+                ),
+                new Uint8Array(buffer),
+            );
+        }
+        return buffer;
     });
 
-    if (!response.ok) {
-        const _ = await response.text();
-        throw new Error(
-            `HTTP ${response.status} @ ${endpoint}: ${response.statusText}`,
-        );
-    }
+    results.push(...await Promise.all(downloadPromises));
 
     const response_parsed: WsResponseModel<DownloadCdfResponse> = {
         erro: false,
         mensagem: "",
-        totalRecords: 1,
-        objetoResposta: await response.arrayBuffer(),
+        totalRecords: results.length,
+        objetoResposta: Array.isArray(params.cdfId) ? results : results[0],
     };
 
     const result = parseApiResponse(
         DownloadCdfResponseSchema,
         response_parsed,
-        endpoint,
+        "",
     );
-
-    if (params.destinationFolder) {
-        await Deno.writeFile(
-            join(
-                params.destinationFolder,
-                createCDFFileName(params.cdfId),
-            ),
-            new Uint8Array(result),
-        );
-    }
 
     return result;
 }

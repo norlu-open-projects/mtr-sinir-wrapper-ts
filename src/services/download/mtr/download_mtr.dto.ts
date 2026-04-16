@@ -16,13 +16,16 @@ type DownloadMtrRequest = z.infer<
     typeof DownloadMtrRequestSchema
 >;
 
-const DownloadMtrResponseSchema = z.instanceof(ArrayBuffer, {
-    message: "Somente ArrayBuffer",
-}).refine((e) => e.byteLength > 0, {
-    message: "Nenhum byte recebido",
-});
+const DownloadMtrResponseSchema = z.union([
+    z.instanceof(ArrayBuffer).refine((e) => e.byteLength > 0, {
+        message: "Nenhum byte recebido",
+    }),
+    z.array(z.instanceof(ArrayBuffer).refine((e) => e.byteLength > 0, {
+        message: "Nenhum byte recebido",
+    })),
+]);
 
 const DownloadMtrRequestSchema = z.object({
-    mtrId: z.string().min(5),
-    destinationFolder: z.string().min(1).nonempty().optional(),
+    mtrId: z.union([z.string().min(5), z.array(z.string().min(5)).nonempty()]),
+    destinationFolder: z.string().min(1).optional(),
 });

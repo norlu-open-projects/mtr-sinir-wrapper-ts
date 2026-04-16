@@ -8,14 +8,56 @@
 import type { WsMethodContext, WsResponseModel } from "~type/ws_config.type.ts";
 import { parseApiInput, parseApiResponse } from "~util/validate_schema.ts";
 
+import type { ConsultarMtrResponse } from "~service/consult/consultar_mtr/consultar_mtr.dto.ts";
 import {
     type ReceberLoteMtrRequest,
     ReceberLoteMtrRequestSchema,
     type ReceberLoteMtrResponse,
     ReceberLoteMtrResponseSchema,
+    SimpleReceiveInputSchema,
+    type SimpleReceiveInput,
 } from "~service/receive/receber_mtr/receber_mtr.dto.ts";
 
-export { receberLoteMTRMethod };
+export { receberLoteMTRMethod, mapConsultToReceive };
+
+function mapConsultToReceive(
+    mtrConsult: ConsultarMtrResponse,
+    receiveData: SimpleReceiveInput,
+): ReceberLoteMtrRequest {
+    const data = SimpleReceiveInputSchema.parse(receiveData);
+
+    const residuo = mtrConsult.listaManifestoResiduo[0];
+
+    const receiveObj: ReceberLoteMtrRequest = [{
+        dataRecebimento: data.dataRecebimento ?? mtrConsult.manData,
+        manNumero: mtrConsult.manNumero,
+        nomeMotorista: data.motorista,
+        placaVeiculo: data.placa,
+        nomeResponsavelRecebimento: data.responsavel ?? mtrConsult.parceiroDestinador.parDescricao,
+        observacoes: data.observacoes ?? mtrConsult.manObservacao ?? "Recebimento via API",
+        listaManifestoResiduos: [{
+            claCodigo: data.claCodigo ?? residuo.classe.claCodigo,
+            tiaCodigo: data.tiaCodigo ?? residuo.tipoAcondicionamento.tiaCodigo,
+            traCodigo: residuo.tratamento.traCodigo,
+            tieCodigo: data.tieCodigo ?? residuo.tipoEstado.tieCodigo,
+            uniCodigo: data.uniCodigo ?? residuo.unidade.uniCodigo,
+            resCodigoIbama: residuo.residuo.resCodigoIbama,
+            marQuantidade: residuo.marQuantidade,
+            marQuantidadeRecebida: data.quantidade,
+            marJustificativa: data.justificativa ?? "Recebimento conforme nota fiscal",
+        }],
+    }];
+
+    if (data.resCodigoIbamaNovo) {
+        receiveObj[0].listaManifestoResiduos[0].resCodigoIbamaNovo = data.resCodigoIbamaNovo;
+    }
+
+    if (data.traCodigoNovo) {
+        receiveObj[0].listaManifestoResiduos[0].traCodigoNovo = data.traCodigoNovo;
+    }
+
+    return receiveObj;
+}
 
 async function receberLoteMTRMethod(
     ctx: WsMethodContext,

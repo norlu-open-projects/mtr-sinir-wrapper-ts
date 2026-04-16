@@ -16,13 +16,16 @@ type DownloadCdfRequest = z.infer<
     typeof DownloadCdfRequestSchema
 >;
 
-const DownloadCdfResponseSchema = z.instanceof(ArrayBuffer, {
-    message: "Somente ArrayBuffer",
-}).refine((e) => e.byteLength > 0, {
-    message: "Nenhum byte recebido",
-});
+const DownloadCdfResponseSchema = z.union([
+    z.instanceof(ArrayBuffer).refine((e) => e.byteLength > 0, {
+        message: "Nenhum byte recebido",
+    }),
+    z.array(z.instanceof(ArrayBuffer).refine((e) => e.byteLength > 0, {
+        message: "Nenhum byte recebido",
+    })),
+]);
 
 const DownloadCdfRequestSchema = z.object({
-    cdfId: z.string().min(5),
-    destinationFolder: z.string().min(1).nonempty().optional(),
+    cdfId: z.union([z.string().min(5), z.array(z.string().min(5)).nonempty()]),
+    destinationFolder: z.string().min(1).optional(),
 });
